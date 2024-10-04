@@ -1,0 +1,76 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class TaskScheduler {
+
+    // Класс для представления задачи
+    static class Task {
+        String name;
+        int time;
+
+        Task(String name, int time) {
+            this.name = name;
+            this.time = time;
+        }
+
+        @Override
+        public String toString() {
+            return name + " (" + time + "ч)";
+        }
+    }
+
+    /**
+     * Метод для выбора максимального количества задач, которые можно выполнить в рамках maxTime.
+     *
+     * @param tasks   Список задач.
+     * @param maxTime Максимальное доступное время.
+     * @return Список выбранных задач.
+     */
+    public static List<Task> selectTasks(List<Task> tasks, int maxTime) {
+        // Сортируем задачи по времени выполнения в порядке возрастания
+        List<Task> sortedTasks = new ArrayList<>(tasks);
+        Collections.sort(sortedTasks, Comparator.comparingInt(task -> task.time));
+
+        List<Task> selectedTasks = new ArrayList<>();
+        int totalTime = 0;
+
+        // Выбираем задачи, пока не превысим maxTime
+        for (Task task : sortedTasks) {
+            if (totalTime + task.time <= maxTime) {
+                selectedTasks.add(task);
+                totalTime += task.time;
+            } else {
+                break; // Прерываем цикл, если следующая задача превышает лимит времени
+            }
+        }
+
+        return selectedTasks;
+    }
+
+    public static void main(String[] args) {
+        // Пример списка задач
+        List<Task> tasks = Arrays.asList(
+                new Task("Задача A", 3),
+                new Task("Задача B", 2),
+                new Task("Задача C", 1),
+                new Task("Задача D", 4),
+                new Task("Задача E", 2)
+        );
+
+        int maxTime = 6; // Максимальное доступное время
+
+        List<Task> selectedTasks = selectTasks(tasks, maxTime);
+
+        System.out.println("Максимальное количество задач, которые можно выполнить за " + maxTime + " часов:");
+        for (Task task : selectedTasks) {
+            System.out.println(task);
+        }
+
+        // Общая затраченное время
+        int totalTime = selectedTasks.stream().mapToInt(task -> task.time).sum();
+        System.out.println("Общее время: " + totalTime + " часов");
+    }
+}
